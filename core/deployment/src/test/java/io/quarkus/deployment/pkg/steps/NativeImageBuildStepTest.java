@@ -58,6 +58,12 @@ public class NativeImageBuildStepTest {
         assertOlderThan("GraalVM Version 20.0.0", "GraalVM Version 20.1.0");
     }
 
+    @Test
+    void graalVersion() {
+        Version version = Version.of(Stream.of("GraalVM 21.1.0 Java 11 CE (Java Version 11.0.11+8-jvmci-21.1-b05)"));
+        assertVersion(21, 1, ORACLE, version);
+    }
+
     /**
      * Asserts that version is older than other.
      */
