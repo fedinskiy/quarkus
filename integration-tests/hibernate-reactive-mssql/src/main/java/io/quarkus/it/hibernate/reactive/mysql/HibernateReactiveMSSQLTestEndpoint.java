@@ -23,7 +23,7 @@ public class HibernateReactiveMSSQLTestEndpoint {
     @GET
     @Path("/query")
     public Uni<String> query() {
-        return mssqlPool.preparedQuery("INSERT INTO Pig (id, name) VALUES (5, 'Čester Slovník')").execute()
+        return mssqlPool.query("INSERT INTO Pig (id, name) VALUES (5, 'Čester Slovník')").execute()
                 .chain(() -> mutinySession.find(GuineaPig.class, Integer.valueOf(5)))
                 .map(GuineaPig::getName)
                 .onFailure().recoverWithItem("Nothing!");
@@ -32,9 +32,9 @@ public class HibernateReactiveMSSQLTestEndpoint {
     @GET
     @Path("/vertx")
     public Uni<String> vertx() {
-        return mssqlPool.preparedQuery("INSERT INTO Pig (id, name) VALUES (1, 'El Niño')").execute()
-                .chain(() -> mutinySession.find(GuineaPig.class, Integer.valueOf(1)))
-                .map(GuineaPig::getName)
+        return mssqlPool.query("INSERT INTO Pig (id, name) VALUES (1, 'El Niño')").execute()
+                .chain(() -> mssqlPool.query("SELECT name from Pig where id=2").execute())
+                .map(rows -> rows.iterator().next().getString("name"))
                 .onFailure().recoverWithItem("Nothing!");
     }
 
