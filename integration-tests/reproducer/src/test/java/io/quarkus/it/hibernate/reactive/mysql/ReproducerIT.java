@@ -8,11 +8,10 @@ import io.restassured.RestAssured;
 import io.restassured.response.Response;
 
 @QuarkusTest
-public class ReproducerTest {
+public class ReproducerIT {
     @Test
     public void persisted() {
-        Response response = RestAssured.when()
-                .get("/tests/imported");
+        Response response = RestAssured.when().get("/tests/imported");
         Assertions.assertEquals(200, response.statusCode());
         Assertions.assertEquals("Sir Fluffy", response.body().asString());
     }
