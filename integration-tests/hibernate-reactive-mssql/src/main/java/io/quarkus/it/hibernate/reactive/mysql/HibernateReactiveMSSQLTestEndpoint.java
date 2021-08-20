@@ -1,12 +1,13 @@
 package io.quarkus.it.hibernate.reactive.mysql;
 
-import io.smallrye.mutiny.Uni;
-import io.vertx.mutiny.mssqlclient.MSSQLPool;
-import org.hibernate.reactive.mutiny.Mutiny;
-
 import javax.inject.Inject;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
+
+import org.hibernate.reactive.mutiny.Mutiny;
+
+import io.smallrye.mutiny.Uni;
+import io.vertx.mutiny.mssqlclient.MSSQLPool;
 
 @Path("/tests")
 public class HibernateReactiveMSSQLTestEndpoint {
@@ -22,9 +23,17 @@ public class HibernateReactiveMSSQLTestEndpoint {
     @GET
     @Path("/query")
     public Uni<String> query() {
-        return mssqlPool.query("DELETE FROM Pig where id=5").execute()
-                .flatMap(junk -> mssqlPool.preparedQuery("INSERT INTO Pig (id, name) VALUES (5, 'Čester Slovník')").execute())
+        return mssqlPool.preparedQuery("INSERT INTO Pig (id, name) VALUES (5, 'Čester Slovník')").execute()
                 .chain(() -> mutinySession.find(GuineaPig.class, Integer.valueOf(5)))
+                .map(GuineaPig::getName)
+                .onFailure().recoverWithItem("Nothing!");
+    }
+
+    @GET
+    @Path("/vertx")
+    public Uni<String> vertx() {
+        return mssqlPool.preparedQuery("INSERT INTO Pig (id, name) VALUES (1, 'El Niño')").execute()
+                .chain(() -> mutinySession.find(GuineaPig.class, Integer.valueOf(1)))
                 .map(GuineaPig::getName)
                 .onFailure().recoverWithItem("Nothing!");
     }
