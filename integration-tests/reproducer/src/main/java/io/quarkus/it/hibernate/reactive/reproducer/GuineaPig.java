@@ -1,16 +1,23 @@
-package io.quarkus.it.hibernate.reactive.mysql;
+package io.quarkus.it.hibernate.reactive.reproducer;
 
 import java.util.Objects;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
+
+import org.hibernate.annotations.GenericGenerator;
 
 @Entity
 @Table(name = "Pig")
 public class GuineaPig {
 
     @Id
+    @Column(name = "id")
+    @GeneratedValue(generator = "ids")
+    @GenericGenerator(name = "ids", strategy = "io.quarkus.it.hibernate.reactive.reproducer.IdGenerator")
     private Integer id;
     private String name;
 
