@@ -3,11 +3,13 @@ package io.quarkus.it.hibernate.reactive.reproducer;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import io.quarkus.test.junit.NativeImageTest;
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.RestAssured;
 import io.restassured.response.Response;
 
 @QuarkusTest
+@NativeImageTest
 public class ReproducerITCase {
     @Test
     public void persisted() {
