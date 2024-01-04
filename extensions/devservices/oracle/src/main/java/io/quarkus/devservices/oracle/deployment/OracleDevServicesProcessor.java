@@ -6,6 +6,7 @@ import static io.quarkus.datasource.deployment.spi.DatabaseDefaultSetupConfig.DE
 
 import java.time.Duration;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.OptionalInt;
 
@@ -62,14 +63,14 @@ public class OracleDevServicesProcessor {
                 Labels.addDataSourceLabel(container, datasourceName);
                 Volumes.addVolumes(container, containerConfig.getVolumes());
 
-                container.withEnv(containerConfig.getContainerEnv());
-
+                final Map<String, String> containerEnv = containerConfig.getContainerEnv();
                 // We need to limit the maximum amount of CPUs being used by the container;
                 // otherwise the hardcoded memory configuration of the DB might not be enough to successfully boot it.
                 // See https://github.com/gvenzl/oci-oracle-xe/issues/64
                 // I choose to limit it to "2 cpus": should be more than enough for any local testing needs,
                 // and keeps things simple.
-                container.withCreateContainerCmdModifier(cmd -> cmd.getHostConfig().withNanoCPUs(2_000_000_000l));
+                containerEnv.put("CPU_COUNT","2");
+                container.withEnv(containerEnv);
 
                 containerConfig.getAdditionalJdbcUrlProperties().forEach(container::withUrlParam);
                 containerConfig.getCommand().ifPresent(container::setCommand);
